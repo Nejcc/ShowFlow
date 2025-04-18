@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "Nejcc/ShowFlow",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "A modern, web-based presentation tool built with Vue 3, Laravel, and Tailwind CSS",
+    "keywords": ["vue", "laravel", "presentation", "slides", "tailwind", "pinia"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
