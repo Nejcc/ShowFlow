@@ -6,29 +6,48 @@ export const usePresentationStore = defineStore('presentation', {
     slides: [
       {
         id: 1,
-        title: 'Welcome',
+        title: 'Hello World!',
         type: 'content',
-        content: 'Welcome to the Developer Talk!',
-        code: null
+        content: 'Welcome to this presentation',
+        background: 'bg-gradient-to-r from-blue-500 to-purple-600',
+        textColor: 'text-white'
       },
       {
         id: 2,
-        title: 'Live Code Demo',
-        type: 'code',
-        content: 'Let\'s look at some code!',
-        code: {
-          language: 'javascript',
-          content: `function helloWorld() {
-  console.log('Hello, World!');
-}`
-        }
+        title: 'Slide 1',
+        type: 'content',
+        content: 'This is the first numbered slide',
+        background: 'bg-white'
+      },
+      {
+        id: 3,
+        title: 'Slide 2',
+        type: 'content',
+        content: 'This is the second numbered slide',
+        background: 'bg-gray-50'
+      },
+      {
+        id: 4,
+        title: 'Slide 3',
+        type: 'content',
+        content: 'This is the third numbered slide',
+        background: 'bg-white'
+      },
+      {
+        id: 5,
+        title: 'Created By',
+        type: 'content',
+        content: 'This presentation was created with Vue Presenter',
+        background: 'bg-gradient-to-r from-green-400 to-blue-500',
+        textColor: 'text-white'
       }
     ]
   }),
   
   getters: {
     currentSlideData: (state) => state.slides[state.currentSlide],
-    totalSlides: (state) => state.slides.length
+    totalSlides: (state) => state.slides.length,
+    progress: (state) => ((state.currentSlide + 1) / state.slides.length) * 100
   },
   
   actions: {
