@@ -10,6 +10,7 @@
       v-else-if="currentSlideComponent"
       :is="currentSlideComponent"
       v-bind="currentSlideData.props || {}"
+      :key="currentSlideData.id"
     />
     <template v-else>
       <transition
@@ -54,100 +55,50 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { usePresentationStore } from '../stores/presentation';
-import { computed, ref, onMounted, watch, markRaw } from 'vue';
+import { computed, ref, onMounted, watch, markRaw, defineAsyncComponent } from 'vue';
 
-// Import all slide pages
-const pages = import.meta.glob('../slides/pages/*.vue', { eager: true });
+// Lazy load slide pages
+const pages = import.meta.glob('../slides/pages/*.vue');
 
 const store = usePresentationStore();
 const { currentSlideData, slides } = storeToRefs(store);
 
 const isLoading = ref(false);
-const currentSlideComponent = ref(null);
-const loadedComponents = new Map();
+const currentSlideComponent = computed(() => {
+  if (currentSlideData.value.type !== 'component') return null;
+  
+  const page = currentSlideData.value.page;
+  if (!page) return null;
+
+  const componentPath = `../slides/pages/${page}.vue`;
+  if (!pages[componentPath]) return null;
+
+  return defineAsyncComponent({
+    loader: () => pages[componentPath](),
+    loadingComponent: {
+      template: '<div class="text-white text-xl">Loading slide...</div>'
+    },
+    delay: 200,
+    timeout: 3000,
+    errorComponent: {
+      template: '<div class="text-red-500">Error loading slide</div>'
+    }
+  });
+});
 
 const contentLines = computed(() => {
-  if (currentSlideData.value?.type !== 'text') return [];
-  const content = currentSlideData.value?.content || '';
-  return content.split('\n').filter(line => line.trim() !== '');
+  if (currentSlideData.value.type !== 'text') return [];
+  return currentSlideData.value.content.split('\n').filter(line => line.trim());
 });
 
-const loadComponent = async (pageNumber) => {
-  if (!pageNumber) return null;
-
-  const pagePath = `../slides/pages/${pageNumber}.vue`;
-  const pageModule = pages[pagePath];
-  
-  if (!pageModule) {
-    console.warn(`Component not found for page ${pageNumber}`);
-    return null;
-  }
-
-  try {
-    const component = pageModule.default;
-    return markRaw(component);
-  } catch (error) {
-    console.error('Error loading slide component:', error);
-    return null;
-  }
-};
-
-const prefetchNextSlide = async () => {
-  const currentIndex = slides.value.findIndex(slide => slide.id === currentSlideData.value.id);
-  const nextSlide = slides.value[currentIndex + 1];
-  
-  if (nextSlide?.type === 'component' && nextSlide.page && !loadedComponents.has(nextSlide.page)) {
-    const component = await loadComponent(nextSlide.page);
-    if (component) {
-      loadedComponents.set(nextSlide.page, component);
+// Preload next slide
+watch(() => currentSlideData.value, async (newSlide) => {
+  if (newSlide.type === 'component' && newSlide.page) {
+    const nextPage = newSlide.page + 1;
+    const nextComponentPath = `../slides/pages/${nextPage}.vue`;
+    if (pages[nextComponentPath]) {
+      await pages[nextComponentPath]();
     }
   }
-};
-
-// Load current slide
-const loadCurrentSlide = async () => {
-  if (currentSlideData.value?.type !== 'component') {
-    currentSlideComponent.value = null;
-    return;
-  }
-  
-  const pageNumber = currentSlideData.value.page;
-  if (!pageNumber) {
-    currentSlideComponent.value = null;
-    return;
-  }
-
-  try {
-    isLoading.value = true;
-    
-    // Check if component is already loaded
-    if (loadedComponents.has(pageNumber)) {
-      currentSlideComponent.value = loadedComponents.get(pageNumber);
-    } else {
-      const component = await loadComponent(pageNumber);
-      if (component) {
-        loadedComponents.set(pageNumber, component);
-        currentSlideComponent.value = component;
-      }
-    }
-    
-    // Prefetch next slide
-    await prefetchNextSlide();
-  } catch (error) {
-    console.error('Error loading slide component:', error);
-    currentSlideComponent.value = null;
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-// Watch for changes in the current slide data
-watch(currentSlideData, () => {
-  loadCurrentSlide();
 }, { immediate: true });
-
-// Also watch for changes in the page number
-watch(() => currentSlideData.value?.page, () => {
-  loadCurrentSlide();
-});
 </script> 

@@ -117,11 +117,13 @@
 
 /* Text animation classes */
 .text-fade-up {
-  animation: fadeInUp 0.5s ease-out forwards;
+  animation: text-fade-up 0.5s ease-out forwards;
+  will-change: transform, opacity;
 }
 
 .text-fade-down {
-  animation: fadeInDown 0.5s ease-out forwards;
+  animation: text-fade-down 0.5s ease-out forwards;
+  will-change: transform, opacity;
 }
 
 .text-fade-left {
@@ -137,7 +139,8 @@
 }
 
 .text-bounce {
-  animation: bounceIn 0.5s ease-out forwards;
+  animation: text-bounce 1s ease-in-out infinite;
+  will-change: transform;
 }
 
 .text-rotate {
@@ -180,4 +183,77 @@
 
 .duration-1000 {
   animation-duration: 1s;
+}
+
+/* Optimized animations using transform and opacity */
+@keyframes text-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes text-fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes text-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Slide transitions */
+.slide-fade-right-enter-active,
+.slide-fade-right-leave-active,
+.slide-fade-left-enter-active,
+.slide-fade-left-leave-active {
+  transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+.slide-fade-right-enter-from {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.slide-fade-right-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.slide-fade-left-enter-from {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.slide-fade-left-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+/* Performance optimizations */
+* {
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hardware acceleration for animations */
+.animate-transform {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 } 

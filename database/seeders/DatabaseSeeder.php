@@ -23,7 +23,7 @@ final class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
-            SlideSeeder::class,
+            PresentationSeeder::class,
         ]);
     }
 }

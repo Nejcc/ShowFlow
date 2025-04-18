@@ -12,6 +12,7 @@ return new class extends Migration
     {
         Schema::create('slides', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('presentation_id')->constrained()->onDelete('cascade');
             $table->string('title');
             $table->text('content')->nullable();
             $table->string('type')->default('text'); // text, html, or component

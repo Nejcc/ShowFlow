@@ -6,12 +6,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class Slide extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'presentation_id',
         'title',
         'content',
         'type',
@@ -25,4 +27,9 @@ final class Slide extends Model
         'order' => 'integer',
         'page' => 'integer',
     ];
+
+    public function presentation(): BelongsTo
+    {
+        return $this->belongsTo(Presentation::class);
+    }
 }
