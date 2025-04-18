@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .presentation-container {
+    @apply min-h-screen w-full;
+  }
+
+  .slide-container {
+    @apply min-h-screen w-full flex items-center justify-center p-8;
+  }
+
+  .content-slide,
+  .list-slide,
+  .code-slide,
+  .grid-slide,
+  .logos-slide {
+    @apply max-w-6xl w-full;
+  }
+
+  .page-indicator {
+    @apply fixed bottom-4 right-4 text-gray-400 text-sm font-mono;
+  }
+
+  .list-slide li {
+    @apply opacity-0 -translate-x-5;
+    animation: slideIn 0.5s ease-out forwards;
+  }
+
+  .grid-slide .backdrop-blur-sm,
+  .logos-slide .backdrop-blur-sm {
+    @apply transition-all duration-300;
+  }
+
+  .grid-slide .backdrop-blur-sm:hover,
+  .logos-slide .backdrop-blur-sm:hover {
+    @apply -translate-y-1 shadow-lg;
+  }
+}
+
+@keyframes slideIn {
+  to {
+    @apply opacity-100 translate-x-0;
+  }
+} 
