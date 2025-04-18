@@ -8,8 +8,11 @@ A modern, web-based presentation tool built with Vue 3, Laravel, and Tailwind CS
 - 💻 Live code presentation
 - ⌨️ Keyboard navigation
 - 📺 Fullscreen mode
-- 🎭 Multiple slide types
+- 🎭 Multiple slide types and layouts
 - 🚀 Built with modern tech stack
+- 📱 Mobile-friendly interface
+- 🎯 Slide overview with thumbnails
+- 🎨 Customizable themes and animations
 
 ## Tech Stack
 
@@ -54,7 +57,12 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-6. Build assets:
+6. Run migrations and seeders:
+```bash
+php artisan migrate --seed
+```
+
+7. Build assets:
 ```bash
 npm run build
 ```
@@ -68,42 +76,122 @@ php artisan serve
 npm run dev
 ```
 
-## Usage
+## Creating Presentations
 
-### Creating Slides
+### Slide Types
 
-Slides are defined in `resources/js/stores/presentation.js`. Each slide can have the following properties:
+The system supports several types of slides:
 
-```javascript
-{
-  id: Number,
-  title: String,
-  type: String, // 'content', 'list', 'code', 'grid', 'logos'
-  content: String,
-  background: String, // Tailwind CSS classes
-  textColor: String // Optional text color classes
-}
-```
+1. **Component Slides** (`type: 'component'`)
+   - Uses Vue components for complex layouts
+   - Located in `resources/js/slides/pages/`
+   - Named numerically (1.vue, 2.vue, etc.)
 
-### Navigation
+2. **Text Slides** (`type: 'text'`)
+   - Simple text-based slides
+   - Content is displayed line by line with animations
 
-- **Keyboard Controls**:
-  - `←` Previous slide
-  - `→` Next slide
-  - `f` Toggle fullscreen
-  - `Esc` Exit fullscreen
+3. **HTML Slides** (`type: 'html'`)
+   - Custom HTML content
+   - Supports inline styling and custom elements
 
-- **Mouse Controls**:
-  - Click the fullscreen button in the top-right corner
-  - Use the page indicator in the bottom-right
+### Layouts
 
-## Code Style
+Available layouts in `resources/js/layouts/`:
 
-This project uses [Laravel Pint](https://laravel.com/docs/pint) for PHP code style fixing. Run Pint to fix code style issues:
+1. **BaseLayout** - Basic layout with title and content
+2. **CenteredLayout** - Centered content with title
+3. **SplitLayout** - Two-column layout
+4. **GridLayout** - Grid-based layout
+5. **TimelineLayout** - Timeline-based layout
 
+### Creating a New Slide
+
+1. **Component Slide**:
 ```bash
-./vendor/bin/pint
+# Create a new slide component
+touch resources/js/slides/pages/5.vue
 ```
+
+Example component slide:
+```vue
+<template>
+  <CenteredLayout
+    title="My New Slide"
+    background="bg-gradient-to-r from-blue-500 to-purple-600"
+    text-color="text-white"
+  >
+    <div class="text-xl">
+      Your content here
+    </div>
+  </CenteredLayout>
+</template>
+
+<script setup>
+import CenteredLayout from '../../layouts/CenteredLayout.vue';
+</script>
+```
+
+2. **Database Entry**:
+Add the slide to the database using the seeder or manually:
+
+```php
+// In database/seeders/SlideSeeder.php
+$slides[] = [
+    'title' => 'My New Slide',
+    'type' => 'component',
+    'page' => 5,
+    'background' => 'bg-gradient-to-r from-blue-500 to-purple-600',
+    'text_color' => 'text-white',
+    'order' => 4,
+];
+```
+
+### Customizing Slides
+
+1. **Backgrounds**:
+   - Use Tailwind CSS classes
+   - Gradient backgrounds: `bg-gradient-to-r from-color-500 to-color-600`
+   - Solid colors: `bg-blue-500`
+   - Images: `bg-[url('/path/to/image.jpg')]`
+
+2. **Text Colors**:
+   - Light text: `text-white`
+   - Dark text: `text-gray-900`
+   - Custom colors: `text-[#hex]`
+
+3. **Animations**:
+   - Built-in animations in `resources/css/animations.css`
+   - Custom animations can be added to the CSS file
+
+## Navigation
+
+### Keyboard Controls
+
+- `←` Previous slide
+- `→` Next slide
+- `f` Toggle fullscreen
+- `o` Toggle slide overview
+- `Esc` Exit fullscreen/overview
+
+### Mouse Controls
+
+- Click navigation arrows
+- Click slide numbers
+- Click fullscreen button
+- Click overview button
+- Click thumbnails in overview
+
+## Deployment
+
+1. Build production assets:
+```bash
+npm run build
+```
+
+2. Configure your web server to point to the `public` directory
+
+3. Set up proper environment variables in `.env`
 
 ## Contributing
 
